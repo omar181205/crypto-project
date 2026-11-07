@@ -1,22 +1,24 @@
 import socket
-from des import encrypt_ecb
+from des import encrypt_ecb, pad, print_bits
 
 HOST = "127.0.0.1"
 PORT = 5000
 KEY = b"BANK2026"
 
-sender = input("Send from (client name/account): ")
-receiver = input("Send to (client name/account): ")
-amount = input("Amount: ")
-while not amount.isdigit():
-    print("Amount must be a number (digits only).")
-    amount = input("Amount: ")
+message = input("Enter your message: ")
+while message.strip() == "":
+    print("The message cannot be empty.")
+    message = input("Enter your message: ")
 
-message = "TRANSFER $" + amount + " FROM " + sender + " TO " + receiver
-print("Original message:", message)
+data = message.encode("utf-8")
+print()
+print_bits("Message in binary (after padding):", pad(data))
 
-encrypted = encrypt_ecb(message.encode(), KEY)
-print("Encrypted (hex) :", encrypted.hex())
+encrypted = encrypt_ecb(data, KEY)
+print()
+print_bits("Encrypted in binary:", encrypted)
+print()
+print("Encrypted (hex):", encrypted.hex())
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect((HOST, PORT))
